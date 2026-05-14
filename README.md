@@ -112,27 +112,26 @@ Install dependencies:
 
 ```bash
 composer install
+
+cp .env.example .env
+
+php artisan key:generate
+
+php artisan config:clear
+
+php artisan cache:clear
+
+php artisan optimize:clear
+
+php artisan migrate
+
+php artisan serve
 ```
 
 ---
 
-# Push Existing Project To GitHub
 
-```bash
-echo "# laravel13" >> README.md
 
-git init
-
-git add README.md
-
-git commit -m "first commit"
-
-git branch -M main
-
-git remote add origin https://github.com/Dvs149/laravel13.git
-
-git push -u origin main
-```
 
 ---
 
