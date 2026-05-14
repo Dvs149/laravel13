@@ -16,6 +16,7 @@
     <!-- <script src="{{ asset('assets/vendors/js/tagify-data.min.js') }}"></script> -->
     <!-- <script src="{{ asset('assets/vendors/js/quill.min.js') }}"></script> -->
     <script src="{{ asset('assets/vendors/js/select2.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- <script src="{{ asset('assets/vendors/js/lslstrength.min.js') }}  "></script> -->
     <!--! END: Vendors JS !-->
     <!--! BEGIN: Apps Init  !-->
