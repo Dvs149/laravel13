@@ -4,24 +4,31 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class RemoveModule extends Command
 {
-    // This command will remove all files related to a module, including:
-    // Model
-    // Migration
-    // Controller
-    // Requests
-    // Service
-    // Repository
-    // Views
+    /*
+    |--------------------------------------------------------------------------
+    | Command Signature
+    |--------------------------------------------------------------------------
+    */
+
     protected $signature = 'remove:module {name}';
 
     protected $description = 'Remove complete module structure';
 
+    /*
+    |--------------------------------------------------------------------------
+    | Handle Command
+    |--------------------------------------------------------------------------
+    */
+
     public function handle()
     {
-        $name = ucfirst($this->argument('name'));
+        $name = Str::studly(
+            $this->argument('name')
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -40,7 +47,9 @@ class RemoveModule extends Command
         */
 
         $this->deleteFile(
-            app_path("Http/Controllers/{$name}Controller.php")
+            app_path(
+                "Http/Controllers/{$name}Controller.php"
+            )
         );
 
         /*
@@ -50,11 +59,15 @@ class RemoveModule extends Command
         */
 
         $this->deleteFile(
-            app_path("Http/Requests/Store{$name}Request.php")
+            app_path(
+                "Http/Requests/Store{$name}Request.php"
+            )
         );
 
         $this->deleteFile(
-            app_path("Http/Requests/Update{$name}Request.php")
+            app_path(
+                "Http/Requests/Update{$name}Request.php"
+            )
         );
 
         /*
@@ -64,7 +77,9 @@ class RemoveModule extends Command
         */
 
         $this->deleteFile(
-            app_path("Services/{$name}Service.php")
+            app_path(
+                "Services/{$name}Service.php"
+            )
         );
 
         /*
@@ -74,7 +89,9 @@ class RemoveModule extends Command
         */
 
         $this->deleteFile(
-            app_path("Repositories/{$name}Repository.php")
+            app_path(
+                "Repositories/{$name}Repository.php"
+            )
         );
 
         /*
@@ -83,15 +100,27 @@ class RemoveModule extends Command
         |--------------------------------------------------------------------------
         */
 
+        // make:module creates:
+        // resources/views/admin/customer
+
+        $viewFolder = Str::lower($name);
+
         $viewPath = resource_path(
-            'views/admin/' . strtolower($name)
+            "views/admin/{$viewFolder}"
         );
 
         if (File::exists($viewPath)) {
 
             File::deleteDirectory($viewPath);
 
-            $this->info("Deleted Views Folder");
+            $this->info(
+                "Deleted Views Folder: {$viewPath}"
+            );
+        } else {
+
+            $this->warn(
+                "Views Folder Not Found: {$viewPath}"
+            );
         }
 
         /*
@@ -100,29 +129,59 @@ class RemoveModule extends Command
         |--------------------------------------------------------------------------
         */
 
-        $migrationPath = database_path('migrations');
+        $migrationPath = database_path(
+            'migrations'
+        );
 
         $files = File::files($migrationPath);
 
+        $tableName = Str::snake(
+            Str::pluralStudly($name)
+        );
+
+        $migrationFound = false;
+
         foreach ($files as $file) {
+
+            $filename = $file->getFilename();
 
             if (
                 str_contains(
-                    $file->getFilename(),
-                    'create_' . strtolower($name) . 's_table'
+                    $filename,
+                    "create_{$tableName}_table"
                 )
             ) {
 
-                File::delete($file);
+                File::delete(
+                    $file->getRealPath()
+                );
+
+                $migrationFound = true;
 
                 $this->info(
-                    'Deleted Migration: ' .
-                    $file->getFilename()
+                    "Deleted Migration: {$filename}"
                 );
             }
         }
 
-        $this->info("{$name} module removed successfully.");
+        if (! $migrationFound) {
+
+            $this->warn(
+                "Migration Not Found For: {$tableName}"
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Success Message
+        |--------------------------------------------------------------------------
+        */
+
+        $this->info(
+            "{$name} module removed successfully."
+        );
+
+        return Command::SUCCESS;
     }
 
     /*
@@ -137,7 +196,14 @@ class RemoveModule extends Command
 
             File::delete($path);
 
-            $this->info("Deleted: {$path}");
+            $this->info(
+                "Deleted: {$path}"
+            );
+        } else {
+
+            $this->warn(
+                "File Not Found: {$path}"
+            );
         }
     }
 }
