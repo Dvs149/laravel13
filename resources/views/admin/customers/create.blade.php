@@ -60,22 +60,10 @@
 
                         </div>
 
-                        <!-- Success Message -->
-
-                        @if(session('success'))
-
-                            <div class="alert alert-success">
-
-                                {{ session('success') }}
-
-                            </div>
-
-                        @endif
-
                         <!-- Form -->
 
                         <form
-                            action="{{ route('admin.customers.store') }}"
+                            id="customerForm"
                             method="POST"
                             enctype="multipart/form-data"
                         >
@@ -85,26 +73,66 @@
                             <!-- Image Upload -->
 
                             <div class="row mb-4 align-items-center">
+
                                 <div class="col-lg-4">
-                                    <label class="fw-semibold">Avatar: </label>
+
+                                    <label class="fw-semibold">
+                                        Avatar:
+                                    </label>
+
                                 </div>
+
                                 <div class="col-lg-8">
+
                                     <div class="mb-4 mb-md-0 d-flex gap-4 your-brand">
+
                                         <div class="wd-100 ht-100 position-relative overflow-hidden border border-gray-2 rounded">
-                                            <img src="{{ asset('assets/images/avatar/1.jpg') }}" class="upload-pic img-fluid rounded h-100 w-100" alt="">
-                                            <div class="position-absolute start-50 top-50 end-0  translate-middle h-100 w-100 hstack align-items-center justify-content-center c-pointer upload-button">
-                                                <i class="feather feather-camera" aria-hidden="true"></i>
+
+                                            <img
+                                                src="{{ asset('assets/images/avatar/1.jpg') }}"
+                                                class="upload-pic img-fluid rounded h-100 w-100"
+                                                alt=""
+                                            >
+
+                                            <div class="position-absolute start-50 top-50 end-0 translate-middle h-100 w-100 hstack align-items-center justify-content-center c-pointer upload-button">
+
+                                                <i class="feather feather-camera"></i>
+
                                             </div>
-                                            <input class="file-upload" type="file" name="image" accept="image/*">
+
+                                            <input
+                                                class="file-upload"
+                                                type="file"
+                                                name="image"
+                                                accept="image/*"
+                                            >
+
                                         </div>
+
                                         <div class="d-flex flex-column gap-1">
-                                            <div class="fs-11 text-gray-500 mt-2"># Upload your prifile</div>
-                                            <div class="fs-11 text-gray-500"># Avatar size 150x150</div>
-                                            <div class="fs-11 text-gray-500"># Max upload size 2mb</div>
-                                            <div class="fs-11 text-gray-500"># Allowed file types: png, jpg, jpeg</div>
+
+                                            <div class="fs-11 text-gray-500">
+                                                # Upload your profile
+                                            </div>
+
+                                            <div class="fs-11 text-gray-500">
+                                                # Avatar size 150x150
+                                            </div>
+
+                                            <div class="fs-11 text-gray-500">
+                                                # Max upload size 2mb
+                                            </div>
+
+                                            <div class="fs-11 text-gray-500">
+                                                # Allowed types: png, jpg, jpeg
+                                            </div>
+
                                         </div>
+
                                     </div>
+
                                 </div>
+
                             </div>
 
                             <!-- Name -->
@@ -126,18 +154,7 @@
                                         name="name"
                                         class="form-control"
                                         placeholder="Enter customer name"
-                                        value="{{ old('name') }}"
                                     >
-
-                                    @error('name')
-
-                                        <div class="text-danger mt-2">
-
-                                            {{ $message }}
-
-                                        </div>
-
-                                    @enderror
 
                                 </div>
 
@@ -162,18 +179,7 @@
                                         name="email"
                                         class="form-control"
                                         placeholder="Enter email"
-                                        value="{{ old('email') }}"
                                     >
-
-                                    @error('email')
-
-                                        <div class="text-danger mt-2">
-
-                                            {{ $message }}
-
-                                        </div>
-
-                                    @enderror
 
                                 </div>
 
@@ -198,18 +204,7 @@
                                         name="phone"
                                         class="form-control"
                                         placeholder="Enter phone number"
-                                        value="{{ old('phone') }}"
                                     >
-
-                                    @error('phone')
-
-                                        <div class="text-danger mt-2">
-
-                                            {{ $message }}
-
-                                        </div>
-
-                                    @enderror
 
                                 </div>
 
@@ -234,17 +229,7 @@
                                         class="form-control"
                                         rows="4"
                                         placeholder="Enter address"
-                                    >{{ old('address') }}</textarea>
-
-                                    @error('address')
-
-                                        <div class="text-danger mt-2">
-
-                                            {{ $message }}
-
-                                        </div>
-
-                                    @enderror
+                                    ></textarea>
 
                                 </div>
 
@@ -255,8 +240,8 @@
                             <div class="text-end">
 
                                 <button
-                                    type="submit"
-                                    class="btn btn-primary"
+                                    type="button"
+                                    class="btn btn-primary create_cust"
                                 >
 
                                     <i class="feather-user-plus me-2"></i>
@@ -287,31 +272,124 @@
 
 <script>
 
-    $(document).ready(function () {
+$(document).ready(function () {
 
-        // Preview uploaded image
-        $(".file-upload").on("change", function () {
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Remove Validation Errors
+    |--------------------------------------------------------------------------
+    */
 
-            var input = this;
+    $(document).on(
+        "keyup change",
+        "#customerForm input, #customerForm textarea",
+        function () {
 
-            if (input.files && input.files[0]) {
+            $(this)
+                .closest(".col-lg-8")
+                .find(".validation-error")
+                .remove();
+        }
+    );
 
-                var reader = new FileReader();
+    /*
+    |--------------------------------------------------------------------------
+    | AJAX Submit
+    |--------------------------------------------------------------------------
+    */
 
-                reader.onload = function (e) {
-                    $(".upload-pic").attr("src", e.target.result);
-                };
+    $(document).on("click", ".create_cust", function (e) {
 
-                reader.readAsDataURL(input.files[0]);
+        e.preventDefault();
+
+        let button = $(this);
+
+        let form = $("#customerForm")[0];
+
+        let formData = new FormData(form);
+
+        // remove old validation errors
+        $(".validation-error").remove();
+
+        // disable button
+        button.prop("disabled", true);
+
+        button.html("Processing...");
+
+        $.ajax({
+
+            url: "{{ route('admin.customers.store') }}",
+
+            type: "POST",
+
+            data: formData,
+
+            processData: false,
+
+            contentType: false,
+
+            success: function (response) {
+
+                button.prop("disabled", false);
+
+                button.html(`
+                    <i class="feather-user-plus me-2"></i>
+                    Create Customer
+                `);
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: response.message
+                });
+
+                // reset form
+                $("#customerForm")[0].reset();
+
+                // reset image preview
+                $(".upload-pic").attr(
+                    "src",
+                    "{{ asset('assets/images/avatar/1.jpg') }}"
+                );
+            },
+
+            error: function (xhr) {
+
+                button.prop("disabled", false);
+
+                button.html(`
+                    <i class="feather-user-plus me-2"></i>
+                    Create Customer
+                `);
+
+                if (xhr.status === 422) {
+
+                    let errors = xhr.responseJSON.errors;
+
+                    $.each(errors, function (key, value) {
+
+                        let input = $(
+                            "[name='" + key + "']"
+                        );
+
+                        input
+                            .closest(".col-lg-8")
+                            .find(".validation-error")
+                            .remove();
+
+                        input.after(`
+                            <div class="text-danger validation-error mt-2">
+                                ${value[0]}
+                            </div>
+                        `);
+                    });
+                }
             }
         });
-
-        // Trigger file input on button click
-        $(".upload-button").on("click", function () {
-            $(".file-upload").click();
-        });
-
     });
+
+});
 
 </script>
 

@@ -5,32 +5,43 @@
 <div class="nxl-content">
 
     <!-- Page Header -->
+
     <div class="page-header">
 
         <div class="page-header-left d-flex align-items-center">
 
             <div class="page-header-title">
-                <h5 class="m-b-10">Customer</h5>
+
+                <h5 class="m-b-10">
+                    Customer
+                </h5>
+
             </div>
 
             <ul class="breadcrumb">
+
                 <li class="breadcrumb-item">
+
                     <a href="{{ route('admin.dashboard') }}">
                         Home
                     </a>
+
                 </li>
 
                 <li class="breadcrumb-item">
                     Customer List
                 </li>
+
             </ul>
 
         </div>
 
         <div class="page-header-right ms-auto">
 
-            <a href="{{ route('admin.customers.create') }}"
-               class="btn btn-primary">
+            <a
+                href="{{ route('admin.customers.create') }}"
+                class="btn btn-primary"
+            >
 
                 <i class="feather-plus me-2"></i>
 
@@ -41,23 +52,6 @@
         </div>
 
     </div>
-
-    <!-- Success Message -->
-
-    @if(session('success'))
-
-        <div class="alert alert-success alert-dismissible fade show">
-
-            {{ session('success') }}
-
-            <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-            </button>
-
-        </div>
-
-    @endif
 
     <!-- Main Content -->
 
@@ -73,27 +67,46 @@
 
                         <div class="table-responsive">
 
-                            <table class="table table-hover" id="customerList">
+                            <table
+                                class="table table-hover"
+                                id="customerList"
+                            >
 
                                 <thead>
 
                                     <tr>
 
-                                        <th width="5%">#</th>
+                                        <th width="5%">
+                                            #
+                                        </th>
 
-                                        <th>Image</th>
+                                        <th>
+                                            Image
+                                        </th>
 
-                                        <th>Name</th>
+                                        <th>
+                                            Name
+                                        </th>
 
-                                        <th>Email</th>
+                                        <th>
+                                            Email
+                                        </th>
 
-                                        <th>Phone</th>
+                                        <th>
+                                            Phone
+                                        </th>
 
-                                        <th>Address</th>
+                                        <th>
+                                            Address
+                                        </th>
 
-                                        <th>Created At</th>
+                                        <th>
+                                            Created At
+                                        </th>
 
-                                        <th class="text-end">Actions</th>
+                                        <th class="text-end">
+                                            Actions
+                                        </th>
 
                                     </tr>
 
@@ -126,7 +139,9 @@
                                                 @else
 
                                                     <div class="avatar-text avatar-md">
+
                                                         {{ strtoupper(substr($customer->name, 0, 1)) }}
+
                                                     </div>
 
                                                 @endif
@@ -136,7 +151,9 @@
                                             <td>
 
                                                 <span class="fw-semibold">
+
                                                     {{ $customer->name }}
+
                                                 </span>
 
                                             </td>
@@ -154,7 +171,9 @@
                                             </td>
 
                                             <td>
+
                                                 {{ $customer->created_at->format('d M Y') }}
+
                                             </td>
 
                                             <td>
@@ -163,8 +182,10 @@
 
                                                     <!-- Edit -->
 
-                                                    <a href="{{ route('admin.customers.edit', $customer->id) }}"
-                                                       class="avatar-text avatar-md">
+                                                    <a
+                                                        href="{{ route('admin.customers.edit', $customer->id) }}"
+                                                        class="avatar-text avatar-md"
+                                                    >
 
                                                         <i class="feather feather-edit"></i>
 
@@ -172,15 +193,19 @@
 
                                                     <!-- Delete -->
 
-                                                    <form action="{{ route('admin.customers.destroy', $customer->id) }}"
-                                                          method="POST"
-                                                          onsubmit="return confirm('Are you sure?')">
+                                                    <form
+                                                        action="{{ route('admin.customers.destroy', $customer->id) }}"
+                                                        method="POST"
+                                                        class="deleteCustomerForm"
+                                                    >
 
                                                         @csrf
                                                         @method('DELETE')
 
-                                                        <button type="submit"
-                                                                class="avatar-text avatar-md border-0 bg-transparent">
+                                                        <button
+                                                            type="submit"
+                                                            class="avatar-text avatar-md border-0 bg-transparent"
+                                                        >
 
                                                             <i class="feather feather-trash-2 text-danger"></i>
 
@@ -198,7 +223,10 @@
 
                                         <tr>
 
-                                            <td colspan="8" class="text-center py-5">
+                                            <td
+                                                colspan="8"
+                                                class="text-center py-5"
+                                            >
 
                                                 No Customers Found
 
@@ -211,15 +239,12 @@
                                 </tbody>
 
                             </table>
-                            
 
                         </div>
 
                     </div>
 
                 </div>
-
-                
 
             </div>
 
@@ -230,3 +255,57 @@
 </div>
 
 @endsection
+
+@push('scripts')
+
+<script>
+
+$(document).ready(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delete Customer
+    |--------------------------------------------------------------------------
+    */
+
+    $(document).on(
+        "submit",
+        ".deleteCustomerForm",
+        function (e)
+        {
+
+            e.preventDefault();
+
+            let form = this;
+
+            Swal.fire({
+
+                title: "Are you sure?",
+
+                text: "This customer will be deleted permanently!",
+
+                icon: "warning",
+
+                showCancelButton: true,
+
+                confirmButtonColor: "#3085d6",
+
+                cancelButtonColor: "#d33",
+
+                confirmButtonText: "Yes, delete it!"
+
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    form.submit();
+                }
+            });
+        }
+    );
+
+});
+
+</script>
+
+@endpush

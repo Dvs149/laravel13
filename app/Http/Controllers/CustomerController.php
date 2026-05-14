@@ -35,9 +35,10 @@ class CustomerController extends Controller
 
         Customer::create($data);
 
-        return redirect()
-            ->route('admin.customers.index')
-            ->with('success', 'Customer created successfully');
+        return response()->json([
+                                    'success' => true,
+                                    'message' => 'Customer created successfully'
+                                ]);
     }
 
     public function edit(Customer $customer)
@@ -71,9 +72,10 @@ class CustomerController extends Controller
 
         $customer->update($data);
 
-        return redirect()
-            ->route('admin.customers.index')
-            ->with('success', 'Customer updated successfully');
+        return response()->json([
+                                    'success' => true,
+                                    'message' => 'Customer updated successfully'
+                                ]);
     }
 
     public function destroy(Customer $customer)
