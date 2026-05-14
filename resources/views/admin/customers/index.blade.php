@@ -116,7 +116,7 @@
                                                     <div class="avatar-image avatar-md">
 
                                                         <img
-                                                            src="{{ asset('uploads/customers/' . $customer->image) }}"
+                                                            src="{{ asset('storage/' . $customer->image) }}"
                                                             class="img-fluid rounded-circle"
                                                             alt="customer"
                                                         >

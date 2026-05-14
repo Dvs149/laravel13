@@ -1006,7 +1006,7 @@
                         <div class="hstack justify-content-between border border-dashed rounded-3 p-3 mb-3">
                             <div class="hstack gap-3">
                                 <div class="avatar-image">
-                                    <img src="{{ asset('assets/images/avatar/1.png') }}" alt="" class="img-fluid" />
+                                    <img src="{{ asset('assets/images/avatar/1.jpg') }}" alt="" class="img-fluid" />
                                 </div>
                                 <div>
                                     <a href="javascript:void(0);">{{auth()->user()->name}}</a>

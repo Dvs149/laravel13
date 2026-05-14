@@ -90,7 +90,7 @@
                                             @if($customer->image)
                             
                                                 <img
-                                                    src="{{ asset('uploads/customers/' . $customer->image) }}"
+                                                    src="{{ asset('storage/' . $customer->image) }}"
                                                     class="upload-pic img-fluid rounded h-100 w-100"
                                                     alt=""
                                                 >

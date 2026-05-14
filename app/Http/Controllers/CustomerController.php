@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerController extends Controller
 {
     public function index()
     {
         $customers = Customer::latest()->get();
-        
 
         return view('admin.customers.index', compact('customers'));
     }
@@ -27,13 +27,10 @@ class CustomerController extends Controller
 
         if ($request->hasFile('image')) {
 
-            $image = $request->file('image');
-
-            $imageName = time() . '.' . $image->extension();
-
-            $image->move(public_path('uploads/customers'), $imageName);
-
-            $data['image'] = $imageName;
+            // store image in storage/app/public/customers
+            $data['image'] = $request
+                ->file('image')
+                ->store('customers', 'public');
         }
 
         Customer::create($data);
@@ -57,21 +54,19 @@ class CustomerController extends Controller
 
         if ($request->hasFile('image')) {
 
+            // delete old image
             if (
                 $customer->image &&
-                file_exists(public_path('uploads/customers/' . $customer->image))
+                Storage::disk('public')->exists($customer->image)
             ) {
 
-                unlink(public_path('uploads/customers/' . $customer->image));
+                Storage::disk('public')->delete($customer->image);
             }
 
-            $image = $request->file('image');
-
-            $imageName = time() . '.' . $image->extension();
-
-            $image->move(public_path('uploads/customers'), $imageName);
-
-            $data['image'] = $imageName;
+            // upload new image
+            $data['image'] = $request
+                ->file('image')
+                ->store('customers', 'public');
         }
 
         $customer->update($data);
@@ -83,12 +78,13 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
+        // delete image
         if (
             $customer->image &&
-            file_exists(public_path('uploads/customers/' . $customer->image))
+            Storage::disk('public')->exists($customer->image)
         ) {
 
-            unlink(public_path('uploads/customers/' . $customer->image));
+            Storage::disk('public')->delete($customer->image);
         }
 
         $customer->delete();
