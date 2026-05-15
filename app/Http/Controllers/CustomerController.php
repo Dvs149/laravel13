@@ -118,4 +118,15 @@ class CustomerController extends Controller
                 'Customer deleted successfully'
             );
     }
+    public function restore($id)
+    {
+        Customer::withTrashed()
+            ->find($id)
+            ->restore();
+    
+        return back()->with(
+            'success',
+            'Customer restored successfully'
+        );
+    }
 }

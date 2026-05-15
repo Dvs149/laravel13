@@ -52,4 +52,11 @@ class CustomerRepository
     {
         return $customer->delete();
     }
+
+    public function restore($id)
+    {
+        return Customer::withTrashed()
+            ->find($id)
+            ->restore();
+    }
 }
