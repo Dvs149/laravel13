@@ -3,96 +3,119 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Services\CustomerService;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
-use Illuminate\Support\Facades\Storage;
 
 class CustomerController extends Controller
 {
+    protected $customerService;
+
+    public function __construct(
+        CustomerService $customerService
+    ) {
+        $this->customerService = $customerService;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Index
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
-        $customers = Customer::latest()->get();
+        $customers = $this->customerService->getAllCustomers();
 
-        return view('admin.customers.index', compact('customers'));
+        return view(
+            'admin.customers.index',
+            compact('customers')
+        );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create
+    |--------------------------------------------------------------------------
+    */
 
     public function create()
     {
         return view('admin.customers.create');
     }
 
-    public function store(StoreCustomerRequest $request)
-    {
-        $data = $request->validated();
+    /*
+    |--------------------------------------------------------------------------
+    | Store
+    |--------------------------------------------------------------------------
+    */
 
-        if ($request->hasFile('image')) {
+    public function store(
+        StoreCustomerRequest $request
+    ) {
 
-            // store image in storage/app/public/customers
-            $data['image'] = $request
-                ->file('image')
-                ->store('customers', 'public');
-        }
-
-        Customer::create($data);
+        $this->customerService->storeCustomer(
+            $request->validated()
+        );
 
         return response()->json([
-                                    'success' => true,
-                                    'message' => 'Customer created successfully'
-                                ]);
+            'success' => true,
+            'message' => 'Customer created successfully'
+        ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Edit
+    |--------------------------------------------------------------------------
+    */
 
     public function edit(Customer $customer)
     {
-        return view('admin.customers.edit', compact('customer'));
+        return view(
+            'admin.customers.edit',
+            compact('customer')
+        );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update
+    |--------------------------------------------------------------------------
+    */
 
     public function update(
         UpdateCustomerRequest $request,
         Customer $customer
-    )
-    {
-        $data = $request->validated();
+    ) {
 
-        if ($request->hasFile('image')) {
-
-            // delete old image
-            if (
-                $customer->image &&
-                Storage::disk('public')->exists($customer->image)
-            ) {
-
-                Storage::disk('public')->delete($customer->image);
-            }
-
-            // upload new image
-            $data['image'] = $request
-                ->file('image')
-                ->store('customers', 'public');
-        }
-
-        $customer->update($data);
+        $this->customerService->updateCustomer(
+            $customer,
+            $request->validated()
+        );
 
         return response()->json([
-                                    'success' => true,
-                                    'message' => 'Customer updated successfully'
-                                ]);
+            'success' => true,
+            'message' => 'Customer updated successfully'
+        ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Destroy
+    |--------------------------------------------------------------------------
+    */
 
     public function destroy(Customer $customer)
     {
-        // delete image
-        if (
-            $customer->image &&
-            Storage::disk('public')->exists($customer->image)
-        ) {
-
-            Storage::disk('public')->delete($customer->image);
-        }
-
-        $customer->delete();
+        $this->customerService
+            ->deleteCustomer($customer);
 
         return redirect()
             ->route('admin.customers.index')
-            ->with('success', 'Customer deleted successfully');
+            ->with(
+                'success',
+                'Customer deleted successfully'
+            );
     }
 }

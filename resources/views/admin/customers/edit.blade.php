@@ -282,42 +282,7 @@
 
 $(document).ready(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Image Preview
-    |--------------------------------------------------------------------------
-    */
-
-    $(document).on("change", ".file-upload", function () {
-
-        let input = this;
-
-        if (input.files && input.files[0]) {
-
-            let reader = new FileReader();
-
-            reader.onload = function (e) {
-
-                $(".upload-pic").attr(
-                    "src",
-                    e.target.result
-                );
-            };
-
-            reader.readAsDataURL(input.files[0]);
-        }
-    });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Open File Upload
-    |--------------------------------------------------------------------------
-    */
-
-    $(document).on("click", ".upload-button", function () {
-
-        $(".file-upload").trigger("click");
-    });
+    
 
     /*
     |--------------------------------------------------------------------------
